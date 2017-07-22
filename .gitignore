@@ -1,0 +1,5 @@
+/node_modules
+*.map
+/gulp_livereload.js
+/.npm-version
+/.node-version
