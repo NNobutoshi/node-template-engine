@@ -1,0 +1,19 @@
+{
+  "name": "node-template-engine",
+  "version": "0.0.1",
+  "description": "local module",
+  "main": "node_template_engine.js",
+  "private": true,
+  "author": "https://github.com/NNobutoshi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NNobutoshi/node-template-engine"
+  },
+  "devDependencies": {
+    "through2": "^2.0.3",
+    "xls-to-json": "^0.4.0"
+  },
+  "optionalDependencies": {},
+  "dependencies": {}
+}

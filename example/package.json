@@ -1,0 +1,20 @@
+{
+  "name": "project-example",
+  "version": "0.0.1",
+  "description": "project example",
+  "main": "index.js",
+  "author": "",
+  "license": "",
+  "scripts": {
+    "te": "node node_template_engine.js"
+  },
+  "repository": {
+    "type": "git"
+  },
+  "devDependencies": {
+    "through2": "^2.0.3",
+    "xls-to-json": "^0.4.0"
+  },
+  "optionalDependencies": {},
+  "dependencies": {}
+}
