@@ -63,8 +63,8 @@ function _eachJsonData( data ) {
   } else {
     return false;
   }
-  if ( data[ map.temlate ] ) {
-    data.template = settings.src + '/' + data[ map.temlate ];
+  if ( data[ map.template ] ) {
+    data.template = settings.src + '/' + data[ map.template ];
   } else {
     if( settings.template ) {
       data.template = settings.template;
@@ -144,7 +144,7 @@ function _replacer( str ) {
 function _getNewContent( baseContent, origContent ) {
   var
      newContent
-    ,commentPettern = /<!-- *{{ *'?(.*?)'? *-->(([^\n]*?)|(.*?)\n[\s\S]*?\n(.*?))<!-- *}} *-->/g
+    ,commentPettern = /<!-- *{{ *'?(.*?)'? *-->(([^\r\n]*?)|\r?\n?(.*?)\r?\n[\s\S]*?\r?\n(.*?))\r?\n<!-- *}} *-->/g
     ,store          = {}
     ,escapeRegex    = /([.*+?^=!:${}()|[\]\/\\])/g
     ,targets
@@ -182,7 +182,7 @@ function _getNewContent( baseContent, origContent ) {
         return new RegExp( ret );
       } );
     }
-    baseContent = baseContent.replace(/<!-- *{{ *'?(.*?)'? *-->|<!-- *}} *-->/g, '' );
+    baseContent = baseContent.replace( /<!-- *{{ *'?(.*?)'? *-->\r?\n?|\r?\n?<!-- *}} *-->/g, '' );
     store.contents = store.targets.map( function( item ) {
       var match = origContent.match( item );
       if( match !== null ) {
@@ -193,5 +193,5 @@ function _getNewContent( baseContent, origContent ) {
       baseContent = baseContent.replace( item, store.contents[index] );
     } );
   }
-  return baseContent.replace(/<!-- *{{ *'?(.*?)'? *-->|<!-- *}} *-->/g, '' );
+  return baseContent.replace( /<!-- *{{ *'?(.*?)'? *-->\r?\n?|\r?\n?<!-- *}} *-->/g, '' );
 }
