@@ -25,8 +25,8 @@ var
        path     : 'url'
       ,template : 'template'
       ,targets  : {
-         'description' : /(<meta name="[Dd]escription" content=")(.*?)(" *\/?>)/g
-        ,'keywords'    : /(<meta name="[Kk]eywords" content=")(.*?)(" *\/?>)/g
+         'description' : /(<meta name="[Dd]escription" content=").*?(" *\/?>)/g
+        ,'keywords'    : /(<meta name="[Kk]eywords" content=").*?(" *\/?>)/g
       }
     }
   }
@@ -144,19 +144,19 @@ function _replacer( str ) {
 function _getNewContent( baseContent, origContent ) {
   var
      newContent
-    ,regex       = /<!-- *{{ *'?(.*?)'? *-->(([^\n]*?)|(.*?)\n[\s\S]*?\n(.*?))<!-- *}} *-->/g
-    ,replaces    = {}
-    ,escapeRegex = /([.*+?^=!:${}()|[\]\/\\])/g
-    ,matches
+    ,commentPettern = /<!-- *{{ *'?(.*?)'? *-->(([^\n]*?)|(.*?)\n[\s\S]*?\n(.*?))<!-- *}} *-->/g
+    ,store          = {}
+    ,escapeRegex    = /([.*+?^=!:${}()|[\]\/\\])/g
+    ,targets
   ;
-  if(origContent) {
-    matches = baseContent.match( regex );
-    if ( matches !== null ) {
-      replaces.targets = matches.map( function( item ) {
+  if( origContent ) {
+    targets = baseContent.match( commentPettern );
+    if ( targets !== null ) {
+      store.targets = targets.map( function( item ) {
         var
           ret  = ''
         ;
-        ret = item.replace( regex, function( m0, m1, m2, m3, m4, m5 ) {
+        ret = item.replace( commentPettern, function( m0, m1, m2, m3, m4, m5 ) {
           if( m1 ) {
             if( m3 ) {
                 return m1;
@@ -182,14 +182,15 @@ function _getNewContent( baseContent, origContent ) {
         return new RegExp( ret );
       } );
     }
-    replaces.contents = replaces.targets.map( function( item ) {
+    baseContent = baseContent.replace(/<!-- *{{ *'?(.*?)'? *-->|<!-- *}} *-->/g, '' );
+    store.contents = store.targets.map( function( item ) {
       var match = origContent.match( item );
-      if( match !== null && match[0] ) {
-        return origContent.match( item )[0];
+      if( match !== null ) {
+        return match[0];
       }
     } );
-    replaces.targets.forEach( function( item, index ) {
-      baseContent.replace( item, replaces.contents[index] );
+    store.targets.forEach( function( item, index ) {
+      baseContent = baseContent.replace( item, store.contents[index] );
     } );
   }
   return baseContent.replace(/<!-- *{{ *'?(.*?)'? *-->|<!-- *}} *-->/g, '' );
