@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html>
+<!-- {{ '<html.*?>' --><html><!-- }} -->
 <head>
 <meta charset="UTF-8">
-<title>Document</title>
-<meta name="description" content="ディスクリプション">
-<meta name="keywords" content="キーワード">
+<!-- {{ '<title>.+?</title>'--><title>Document</title><!-- }} -->
+<!-- {{ '<meta name="description" content=".*?" >' --><meta name="description" content=""><!-- }} -->
+<!-- {{ '<meta name="keywords" content=".*?">'--><meta name="keywords" content=""><!-- }} -->
 </head>
 <body>
 <div class="page-01" id="page">
 <header class="pHead-01" id="pHead">page head</header>
 <section class="pBody-01 pBody">
+<!--{{'<main.*?>'-->
 <main class="foo">
 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
 tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
@@ -18,10 +19,11 @@ consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
 cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
 proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 </main>
-<div class="sub">
+<!--}}-->
+<!--{{--><div class="sub">
 sub
 sub
-<!--/.sub --></div>
+<!--/.sub --></div><!--}}-->
 </section>
 <footer class="pFoot" id="pFoot">
 <small lang="en">template</small>
