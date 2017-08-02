@@ -11,9 +11,10 @@
     "url": "https://github.com/NNobutoshi/node-template-engine"
   },
   "devDependencies": {
-    "through2": "^2.0.3",
-    "xls-to-json": "^0.4.0"
   },
   "optionalDependencies": {},
-  "dependencies": {}
+  "dependencies": {
+    "through2": "^2.0.3",
+    "xls-to-json": "^0.4.0"
+  }
 }
