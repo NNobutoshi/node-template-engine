@@ -12,6 +12,7 @@
     "type": "git"
   },
   "devDependencies": {
+    "node-template-engine": "../"
   },
   "optionalDependencies": {},
   "dependencies": {}
