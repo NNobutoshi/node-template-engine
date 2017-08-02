@@ -1,0 +1,18 @@
+{
+  "name": "project-example",
+  "version": "0.0.1",
+  "description": "project example",
+  "main": "index.js",
+  "author": "",
+  "license": "",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git"
+  },
+  "devDependencies": {
+    "node-template-engine": "../"
+  },
+  "optionalDependencies": {},
+  "dependencies": {}
+}
