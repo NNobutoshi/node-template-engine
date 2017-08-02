@@ -6,7 +6,6 @@
   "author": "",
   "license": "",
   "scripts": {
-    "te": "node node_template_engine.js"
   },
   "repository": {
     "type": "git"

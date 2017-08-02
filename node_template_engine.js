@@ -1,10 +1,3 @@
-/*!
-* node_template_engine.js
-* version : 0.0.1
-* link    : https://github.com/NNobutoshi/node_template_engine.git
-* License : MIT
-*/
-
 var
    through  = require('through2')
   ,nodeX2j  = require("xls-to-json")
@@ -16,6 +9,7 @@ var
     ,template  : './src/html/_template/template_default.html'
     ,indexfile : 'index.html'
     ,extension : /\.html?$/
+    ,linefeed  : 'lf' // 'lf' or 'crlf'
     ,x2j : {
        input   : './sitemap.xlsx'
       ,output  : './output.json'
@@ -24,8 +18,10 @@ var
     ,map : {
        path     : 'url'
       ,template : 'template'
+      ,ignore   : 'skip'
       ,targets  : {
-         'description' : /(<meta name="[Dd]escription" content=").*?(" *\/?>)/g
+         'title'       : /(<title>).*?(<\/title>)/g
+        ,'description' : /(<meta name="[Dd]escription" content=").*?(" *\/?>)/g
         ,'keywords'    : /(<meta name="[Kk]eywords" content=").*?(" *\/?>)/g
       }
     }
@@ -34,7 +30,8 @@ var
 
 module.exports = _init;
 
-function _init() {
+function _init( options ) {
+  Object.assign( settings, options );
   _xls2Json( _eachJsonData );
 }
 
@@ -53,12 +50,16 @@ function _eachJsonData( data ) {
      map = settings.map
     ,ret = {}
   ;
+  if( data[ map.ignore ] ) {
+    return false;
+  }
   if ( data[ map.path ] ) {
     data.path = data [ map.path ]
-      .replace( /https?:\/\/[^\/]+/, '')
-      .replace( /^\/?/, settings.dest + '/' )
-      .replace( /\/$/, '/' + settings.indexfile )
       .trim()
+      .replace( /^https?:\/\/[^\/]+/, '')
+      .replace( /^\/?/, settings.dest + '/' )
+      .replace( /(\/[^\.\/]+)$/, '$1/' )
+      .replace( /\/$/, '/' + settings.indexfile )
     ;
   } else {
     return false;
@@ -107,9 +108,9 @@ function _writeFile( data ) {
     template.content = fs.readFileSync( data.template, charset );
     if( orig.exists ) {
       orig.content = fs.readFileSync( data.path, charset );
-      newContent = _getNewContent( template.content, orig.content );
+      newContent = _mergeContent( template.content, orig.content );
     } else {
-      newContent = _getNewContent( template.content );
+      newContent = _mergeContent( template.content );
     }
   } else {
     if( orig.exists ) {
@@ -119,17 +120,34 @@ function _writeFile( data ) {
     }
   }
   newContent = _replace( newContent, data, settings.map.targets );
-  fs.writeFileSync( data.path, newContent );
+  fs.writeFile( data.path, newContent, charset, function( err ) {
+    if(err) {
+      console.error( err );
+    } else {
+      console.info( data.path );
+    }
+  } );
 }
 
 function _replace( content, data, targets ) {
   Object.keys( targets ).forEach( function( key ) {
-    content = content.replace( targets[ key ], _replacer( data[ key] ) );
+    var
+      str = data[ key ]
+    ;
+    if( !str ) {
+      return false;
+    }
+    if( settings.linefeed === 'lf' ) {
+      str = str.replace( /\r?\n/g, '\n' );
+    } else if ( settings.linefeed === 'crlf' ) {
+      str = str.replace( /\r?\n/g, '\r\n' );
+    }
+    content = content.replace( targets[ key ], _replacement( str ) );
   } );
   return content;
 }
 
-function _replacer( str ) {
+function _replacement( str ) {
   return function( m0, m1, m2, m3 ) {
     if( typeof m3 === 'number') {
       return m1 + str + m2;
@@ -141,7 +159,7 @@ function _replacer( str ) {
   };
 }
 
-function _getNewContent( baseContent, origContent ) {
+function _mergeContent( baseContent, origContent ) {
   var
      newContent
     ,commentPettern = /<!-- *{{ *'?(.*?)'? *-->(([^\r\n]*?)|\r?\n?(.*?)\r?\n[\s\S]*?\r?\n(.*?))\r?\n<!-- *}} *-->/g
