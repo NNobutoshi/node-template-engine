@@ -162,7 +162,7 @@ function _replacement( str ) {
 function _mergeContent( baseContent, origContent ) {
   var
      newContent
-    ,commentPettern = /<!-- *{{ *'?(.*?)'? *-->(([^\r\n]*?)|\r?\n?(.*?)\r?\n[\s\S]*?\r?\n(.*?))\r?\n<!-- *}} *-->/g
+    ,commentPettern = /<!-- *{{ *'?(.*?)'? *-->(([^\r\n]*?)|\r?\n?(.*?)\r?\n[\s\S]*?\r?\n(.*?))\r?\n?<!-- *}} *-->/g
     ,store          = {}
     ,escapeRegex    = /([.*+?^=!:${}()|[\]\/\\])/g
     ,targets
@@ -208,7 +208,10 @@ function _mergeContent( baseContent, origContent ) {
       }
     } );
     store.targets.forEach( function( item, index ) {
-      baseContent = baseContent.replace( item, store.contents[index] );
+      var replacement = store.contents[index];
+      if( replacement ) {
+        baseContent = baseContent.replace( item, replacement );
+      }
     } );
   }
   return baseContent.replace( /<!-- *{{ *'?(.*?)'? *-->\r?\n?|\r?\n?<!-- *}} *-->/g, '' );
