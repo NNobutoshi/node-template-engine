@@ -1,6 +1,5 @@
 var
-   through  = require('through2')
-  ,nodeX2j  = require("xls-to-json")
+   nodeX2j  = require("xls-to-json")
   ,fs       = require('fs')
   ,charset  = 'utf-8'
   ,settings = {
@@ -26,33 +25,69 @@ var
       }
     }
   }
+  ,_logger = function() {}
 ;
 
 module.exports = _init;
 
 function _init( options ) {
+  console.time('time');
   Object.assign( settings, options );
   _xls2Json( _eachJsonData );
 }
 
 function _xls2Json( callback ) {
   nodeX2j( settings.x2j, function( err, result ) {
-    if(err) {
+    if( err ) {
       console.error( err );
     } else {
+      _logger = _info( result.length );
       result.forEach( callback );
     }
   });
 }
 
-function _eachJsonData( data ) {
+function _info( max ) {
+  var
+     count     = 0
+    ,comments  = []
+    ,timeoutId = null
+    ,limit     = 3000
+  ;
+
+  return _collect;
+
+  function _collect( comment ) {
+    ++ count;
+    _clear();
+    timeoutId = setTimeout( _show, limit );
+    if( comment ) {
+      comments.push( comment );
+    }
+    if( count === max ) {
+      _clear();
+      _show();
+    }
+  }
+
+  function _show() {
+    _clear();
+    console.info( comments.join('\n') );
+    console.timeEnd('time');
+  }
+
+  function _clear() {
+    clearTimeout( timeoutId );
+    timeoutId = null;
+  }
+
+}
+
+function _eachJsonData( data, index ) {
   var
      map = settings.map
     ,ret = {}
   ;
-  if( data[ map.ignore ] ) {
-    return false;
-  }
   if ( data[ map.path ] ) {
     data.path = data [ map.path ]
       .trim()
@@ -62,6 +97,11 @@ function _eachJsonData( data ) {
       .replace( /\/$/, '/' + settings.indexfile )
     ;
   } else {
+    _logger();
+    return false;
+  }
+  if( data[ map.ignore ] ) {
+    _logger( 'skipped : ' + data.path );
     return false;
   }
   if ( data[ map.template ] ) {
@@ -101,6 +141,7 @@ function _writeFile( data ) {
      orig       = {}
     ,template   = {}
     ,newContent = ''
+    ,isNewFile  = false
   ;
   orig.exists = fs.existsSync( data.path );
   template.exists = ( data.template )? fs.existsSync( data.template ): false;
@@ -110,23 +151,34 @@ function _writeFile( data ) {
       orig.content = fs.readFileSync( data.path, charset );
       newContent = _mergeContent( template.content, orig.content );
     } else {
+      isNewFile = true;
       newContent = _mergeContent( template.content );
     }
   } else {
     if( orig.exists ) {
       newContent = fs.readFileSync( data.path, charset );
     } else {
+      _logger();
       return false;
     }
   }
   newContent = _replace( newContent, data, settings.map.targets );
-  fs.writeFile( data.path, newContent, charset, function( err ) {
-    if(err) {
-      console.error( err );
-    } else {
-      console.info( data.path );
-    }
-  } );
+  if( newContent === orig.content ) {
+    _logger( 'kept    : ' + data.path );
+  } else {
+    fs.writeFile( data.path, newContent, charset, function( err ) {
+      if( err ) {
+        _logger();
+        console.error( err );
+      } else {
+        if( isNewFile === true ) {
+          _logger( 'new     : ' + data.path );
+        } else {
+          _logger( 'writen  : ' + data.path );
+        }
+      }
+    } );
+  }
 }
 
 function _replace( content, data, targets ) {
