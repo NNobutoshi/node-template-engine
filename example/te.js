@@ -1,2 +1,2 @@
-var exec = require('node-template-engine');
+var exec = require('../node_template_engine.js');
 exec();
