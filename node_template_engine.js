@@ -72,8 +72,10 @@ function _info( max ) {
 
   function _show() {
     _clear();
+    console.info( '=== template engine ===' );
     console.info( comments.join('\n') );
     console.timeEnd('time');
+    console.info( '=======================' );
   }
 
   function _clear() {
