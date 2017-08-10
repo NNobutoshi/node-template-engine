@@ -4,8 +4,8 @@ var
   ,charset  = 'utf-8'
   ,settings = {
      dest      : './htdocs'
-    ,src       : './src/html/_template'
-    ,template  : './src/html/_template/template_default.html'
+    ,src       : './src/html/_templates'
+    ,template  : './src/html/_templates/template_default.html'
     ,indexfile : 'index.html'
     ,extension : /\.html?$/
     ,linefeed  : 'lf' // 'lf' or 'crlf'
