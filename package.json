@@ -1,6 +1,6 @@
 {
   "name": "node-template-engine",
-  "version": "0.1.2",
+  "version": "0.2.1",
   "description": "local module",
   "main": "node_template_engine.js",
   "private": true,
