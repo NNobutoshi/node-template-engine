@@ -38,7 +38,7 @@ function _init( options ) {
 
 function _xls2Json( callback ) {
   nodeX2j( settings.x2j, function( err, result ) {
-    if( err ) {
+    if ( err ) {
       console.error( err );
     } else {
       _logger = _info( result.length );
@@ -61,10 +61,10 @@ function _info( max ) {
     ++ count;
     _clear();
     timeoutId = setTimeout( _show, limit );
-    if( comment ) {
+    if ( comment ) {
       comments.push( comment );
     }
-    if( count === max ) {
+    if ( count === max ) {
       _clear();
       _show();
     }
@@ -102,14 +102,14 @@ function _eachJsonData( data, index ) {
     _logger();
     return false;
   }
-  if( data[ map.ignore ] ) {
+  if ( data[ map.ignore ] ) {
     _logger( 'skipped : ' + data.path );
     return false;
   }
   if ( data[ map.template ] ) {
     data.template = settings.src + '/' + data[ map.template ];
   } else {
-    if( settings.template ) {
+    if ( settings.template ) {
       data.template = settings.template;
     }
   }
@@ -123,12 +123,12 @@ function _runRecursively( data, callback ) {
     ,len    = leaves.length
   ;
   leaves.forEach( function ( leaf, index, hoge ) {
-    if( parent === '') {
+    if ( parent === '') {
       parent = leaf;
     } else {
       parent  = parent + '/' + leaf;
     }
-    if( index === len -1 && settings.extension.test( parent ) ) {
+    if ( index === len -1 && settings.extension.test( parent ) ) {
       callback( data );
     } else {
       if ( !fs.existsSync( parent ) ) {
@@ -147,9 +147,9 @@ function _writeFile( data ) {
   ;
   orig.exists = fs.existsSync( data.path );
   template.exists = ( data.template )? fs.existsSync( data.template ): false;
-  if( template.exists ) {
+  if ( template.exists ) {
     template.content = fs.readFileSync( data.template, charset );
-    if( orig.exists ) {
+    if ( orig.exists ) {
       orig.content = fs.readFileSync( data.path, charset );
       newContent = _mergeContent( template.content, orig.content );
     } else {
@@ -157,7 +157,7 @@ function _writeFile( data ) {
       newContent = _mergeContent( template.content );
     }
   } else {
-    if( orig.exists ) {
+    if ( orig.exists ) {
       newContent = fs.readFileSync( data.path, charset );
     } else {
       _logger();
@@ -165,15 +165,15 @@ function _writeFile( data ) {
     }
   }
   newContent = _replace( newContent, data, settings.map.targets );
-  if( newContent === orig.content ) {
+  if ( newContent === orig.content ) {
     _logger( 'kept    : ' + data.path );
   } else {
     fs.writeFile( data.path, newContent, charset, function( err ) {
-      if( err ) {
+      if ( err ) {
         _logger();
         console.error( err );
       } else {
-        if( isNewFile === true ) {
+        if ( isNewFile === true ) {
           _logger( 'new     : ' + data.path );
         } else {
           _logger( 'writen  : ' + data.path );
@@ -188,10 +188,10 @@ function _replace( content, data, targets ) {
     var
       str = data[ key ]
     ;
-    if( !str ) {
+    if ( !str ) {
       return false;
     }
-    if( settings.linefeed === 'lf' ) {
+    if ( settings.linefeed === 'lf' ) {
       str = str.replace( /\r?\n/g, '\n' );
     } else if ( settings.linefeed === 'crlf' ) {
       str = str.replace( /\r?\n/g, '\r\n' );
@@ -203,9 +203,9 @@ function _replace( content, data, targets ) {
 
 function _replacement( str ) {
   return function( m0, m1, m2, m3 ) {
-    if( typeof m3 === 'number') {
+    if ( typeof m3 === 'number') {
       return m1 + str + m2;
-    } else if( typeof m2 === 'number' ) {
+    } else if ( typeof m2 === 'number' ) {
       return m1 + str;
     } else {
       return str;
@@ -221,7 +221,7 @@ function _mergeContent( baseContent, origContent ) {
     ,escapeRegex    = /([.*+?^=!:${}()|[\]\/\\])/g
     ,targets
   ;
-  if( origContent ) {
+  if ( origContent ) {
     targets = baseContent.match( commentPettern );
     if ( targets !== null ) {
       store.targets = targets.map( function( item ) {
@@ -229,21 +229,21 @@ function _mergeContent( baseContent, origContent ) {
           ret  = ''
         ;
         ret = item.replace( commentPettern, function( m0, m1, m2, m3, m4, m5 ) {
-          if( m1 ) {
-            if( m3 ) {
+          if ( m1 ) {
+            if ( m3 ) {
                 return m1;
             } else {
-              if( m4 && m5 ) {
+              if ( m4 && m5 ) {
                 m5 = m5.replace( escapeRegex, '\\$1' );
                 return m1 + '[\\s\\S]*?' + m5;
               }
             }
           } else {
-            if( m3 ) {
+            if ( m3 ) {
                 m3 = m3.replace( escapeRegex, '\\$1' );
                 return m3;
             } else {
-              if( m4 && m5 ) {
+              if ( m4 && m5 ) {
                 m4 = m4.replace( escapeRegex, '\\$1' );
                 m5 = m5.replace( escapeRegex, '\\$1' );
                 return m4 + '[\\s\\S]*?' + m5;
@@ -257,13 +257,13 @@ function _mergeContent( baseContent, origContent ) {
     baseContent = baseContent.replace( /<!-- *{{ *'?(.*?)'? *-->\r?\n?|\r?\n?<!-- *}} *-->/g, '' );
     store.contents = store.targets.map( function( item ) {
       var match = origContent.match( item );
-      if( match !== null ) {
+      if ( match !== null ) {
         return match[0];
       }
     } );
     store.targets.forEach( function( item, index ) {
       var replacement = store.contents[index];
-      if( replacement ) {
+      if ( replacement ) {
         baseContent = baseContent.replace( item, replacement );
       }
     } );
