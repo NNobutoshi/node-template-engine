@@ -4,8 +4,8 @@ var
   ,charset  = 'utf-8'
   ,settings = {
      dest      : './htdocs'
-    ,src       : './src/html/_templates'
-    ,template  : './src/html/_templates/template_default.html'
+    ,src       : './src/_templates'
+    ,template  : './src/_templates/template_default.html'
     ,indexfile : 'index.html'
     ,extension : /\.html?$/
     ,linefeed  : 'lf' // 'lf' or 'crlf'
@@ -122,9 +122,15 @@ function _runRecursively( data, callback ) {
     ,parent = ''
     ,len    = leaves.length
   ;
-  leaves.forEach( function ( leaf, index, hoge ) {
+  leaves.forEach( function ( leaf, index ) {
+    if ( leaf === '' ) {
+      parent = '/';
+      return true;
+    }
     if ( parent === '') {
       parent = leaf;
+    } else if ( parent === '/' ) {
+      parent  = '/' + leaf;
     } else {
       parent  = parent + '/' + leaf;
     }
